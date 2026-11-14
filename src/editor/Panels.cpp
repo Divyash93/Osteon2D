@@ -44,7 +44,8 @@ static bool treeRow(const void* id, ImGuiTreeNodeFlags fl, Icon ic, const std::s
     ImVec2 mn = ImGui::GetItemRectMin(), mx = ImGui::GetItemRectMax();
     float x = mn.x + ImGui::GetTreeNodeToLabelSpacing();
     ImVec2 c(x + isz / 2, (mn.y + mx.y) / 2);
-    if (ic == Icon::Bone && !isDefaultBoneIcon(boneIcon)) drawBoneIcon(ImGui::GetWindowDrawList(), boneIcon, c, isz, ImGui::GetColorU32(ImGuiCol_Text));
+    // The empty-bone crosshair fills its whole box and looks heavy next to the other icons, so it is drawn smaller (in the tree only).
+    if (ic == Icon::Bone && !isDefaultBoneIcon(boneIcon)) drawBoneIcon(ImGui::GetWindowDrawList(), boneIcon, c, boneIcon == "crosshair" ? isz * 0.72f : isz, ImGui::GetColorU32(ImGuiCol_Text));
     else drawIcon(ImGui::GetWindowDrawList(), ic, c, isz, ImGui::GetColorU32(ImGuiCol_Text));
     return open;
 }
