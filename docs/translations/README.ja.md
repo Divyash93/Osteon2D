@@ -30,7 +30,7 @@ Osteon2D は、アートワークの上にボーン階層を作り、画像や�
 
 ## ランタイム（近日公開）
 
-`runtimes/` に **Godot 4**（GDScript）と **Unity**（C#）のランタイムがあります。Unity 版は実際の Unity ではまだ動作確認していません。バイナリ `.skel` の書き出しは実験的です。Web と C/C++ エンジンは計画中です。
+`runtimes/` に **Godot 4**（GDScript）と **Unity**（C#）のランタイムがあります。Unity 版は実際の Unity ではまだ動作確認していません。バイナリ `.skel` の書き出しは実験的です。Web と C/C++ エンジンは計画中です。 使い方ガイド（英語）：[docs/runtimes/USER_GUIDE.md](../runtimes/USER_GUIDE.md)。
 
 ## 言語
 

@@ -1,0 +1,101 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Runtime guide - Osteon2D</title><meta name="description" content="Step-by-step guide to playing Osteon2D animations in Godot and Unity."><link rel="stylesheet" href="style.css"></head><body><nav><div class="wrap"><b>Osteon2D</b><a href="index.html">Home</a><a href="getting-started.html">Getting started</a><a href="runtimes.html">Runtimes</a><a href="runtime-guide.html" class="cur">Runtime guide</a><a href="formats.html">Formats &amp; .skel</a><a href="languages.html">Languages</a><a href="https://github.com/Divyash93/Osteon2D">GitHub</a></div></nav><div class="wrap"><h1 id="using-the-osteon2d-runtimes-a-step-by-step-guide">Using the Osteon2D runtimes: a step-by-step guide</h1><p class="toc"><a href="#1-export-from-osteon2d">1. Export from Osteon2D</a> &middot; <a href="#2-godot-4">2. Godot 4</a> &middot; <a href="#3-unity">3. Unity</a> &middot; <a href="#4-updating-art-or-animation">4. Updating art or animation</a> &middot; <a href="#5-what-the-runtimes-do-not-support-yet">5. What the runtimes do not support yet</a> &middot; <a href="#6-troubleshooting">6. Troubleshooting</a></p>
+<p>Osteon2D ships two runtimes that play your animations inside a game engine:</p>
+<table><tr><th>Engine</th><th>Folder</th><th>Status</th></tr><tr><td><b>Godot 4.3+</b></td><td><a href="https://github.com/Divyash93/Osteon2D/tree/main/runtimes/godot/addons/osteon2d"><code>runtimes/godot/addons/osteon2d</code></a></td><td>Core checked against the editor's own engine in headless Godot 4.7; the sprite node renders correctly in a real window.</td></tr><tr><td><b>Unity 2021.3+</b></td><td><a href="https://github.com/Divyash93/Osteon2D/blob/main/runtimes/unity/com.osteon2d.runtime"><code>runtimes/unity/com.osteon2d.runtime</code></a></td><td>Core checked against the editor's engine. The Unity components, importers and shaders compile, but <b>have not yet been run inside a real Unity editor</b>. Please report anything that goes wrong.</td></tr></table>
+<p>Both are MIT licensed, like the editor, and contain no Esoteric Software code.</p>
+<hr>
+<h2 id="1-export-from-osteon2d">1. Export from Osteon2D</h2>
+<p>Every runtime needs three things from the editor: the skeleton, the atlas and its page images.</p>
+<ol><li><b>Skeleton.</b> Open your project and choose <b>File &gt; Export...</b> (Ctrl+E), then pick <b>JSON</b>. Keep the default 4.2 layout. You get <code>name.json</code>.<ul><li>The runtimes can also read the <code>.osteon</code> project file directly, so exporting JSON is optional while you iterate.</li><li><b>Binary (<code>.skel</code>) is not supported by the runtimes yet.</b> Use JSON.</li></ul></li><li><b>Atlas.</b> Choose <b>File &gt; Texture Packer...</b> (Ctrl+P).<ul><li><i>Input folder</i>: your project's images folder. Every PNG in it is packed.</li><li><i>Output folder</i>: where the atlas goes.</li><li><i>Atlas name</i>: use the <b>same name as the skeleton file</b> (for example <code>hero</code> for <code>hero.json</code>). Unity then finds it automatically.</li><li>Click <b>Pack</b>. You get <code>name.atlas</code> plus its PNG page: <code>name.png</code>, or <code>name_1.png</code>, <code>name_2.png</code>, ... when everything does not fit on one page.</li></ul></li><li>Keep the skeleton, the <code>.atlas</code> and the PNG pages <b>together in one folder</b>.</li></ol>
+<p class="warn">The image names in the atlas must match the attachment names in the skeleton. They do if you pack the same images folder the project uses.</p>
+<hr>
+<h2 id="2-godot-4">2. Godot 4</h2>
+<h3 id="install">Install</h3>
+<ol><li>Copy <code>runtimes/godot/addons/osteon2d</code> into your project, so you have <code>res://addons/osteon2d/</code>.</li><li>Optional: enable it under <b>Project &gt; Project Settings &gt; Plugins</b>. The nodes also work without it, because they register themselves with <code>class_name</code>.</li></ol>
+<h3 id="show-a-character">Show a character</h3>
+<ol><li>Copy the exported files (<code>hero.json</code> or <code>hero.osteon</code>, <code>hero.atlas</code>, <code>hero.png</code>) into the project, for example <code>res://characters/hero/</code>.</li><li>Add a node of type <b>Osteon2DSprite</b> to your scene.</li><li>In the Inspector:<ul><li><b>Skeleton Path</b>: the <code>.json</code> or <code>.osteon</code> file.</li><li><b>Atlas Path</b>: the <code>.atlas</code> file.</li><li><b>Skin</b>: <code>default</code>, or another skin name.</li><li><b>Animation</b>: the animation to play, for example <code>idle</code>.</li></ul></li><li>The character appears and animates in the editor straight away.</li></ol>
+<p>Other Inspector properties:</p>
+<table><tr><th>Property</th><th>What it does</th></tr><tr><td><code>loop</code></td><td>Loop the animation set in the Inspector.</td></tr><tr><td><code>playing</code></td><td>Pause or resume.</td></tr><tr><td><code>speed_scale</code></td><td>Playback speed (1 = normal).</td></tr><tr><td><code>update_mode</code></td><td><code>PROCESS</code> (every frame), <code>PHYSICS</code> (physics ticks) or <code>MANUAL</code> (you call <code>advance(delta)</code>).</td></tr><tr><td><code>flip_h</code>, <code>flip_v</code></td><td>Mirror the character.</td></tr><tr><td><code>clipping</code></td><td>Apply clipping attachments.</td></tr><tr><td><code>debug_bones</code></td><td>Draw the bones on top, for checking.</td></tr></table>
+<h3 id="control-it-from-a-script">Control it from a script</h3>
+<pre><code class="lang-gdscript">extends Node2D
+
+@onready var hero: Osteon2DSprite = $Hero
+
+func _ready() -&gt; void:
+    hero.set_default_mix(0.15)            # crossfade between any two animations
+    hero.set_mix(&quot;run&quot;, &quot;jump&quot;, 0.05)     # a quicker one for this pair
+    hero.play(&quot;idle&quot;)                     # track 0, looping
+    hero.animation_event.connect(_on_event)
+    hero.animation_completed.connect(_on_completed)
+
+func _unhandled_input(e: InputEvent) -&gt; void:
+    if e.is_action_pressed(&quot;jump&quot;):
+        hero.play(&quot;jump&quot;, false)          # play once...
+        hero.add_animation(&quot;idle&quot;, true)  # ...then go back to idle
+
+func _on_event(track: int, event_name: String, i: int, f: float, s: String) -&gt; void:
+    if event_name == &quot;footstep&quot;:
+        $StepSound.play()
+
+func _on_completed(track: int, animation_name: String) -&gt; void:
+    print(animation_name, &quot; finished&quot;)</code></pre>
+<p>More calls:</p>
+<table><tr><th>Call</th><th>What it does</th></tr><tr><td><code>play(name, loop := true, track := 0)</code></td><td>Start an animation now (crossfading from the current one).</td></tr><tr><td><code>add_animation(name, loop := true, delay := 0.0, track := 0)</code></td><td>Queue one after the current animation.</td></tr><tr><td><code>stop(track := 0)</code></td><td>Clear a track.</td></tr><tr><td><code>set_skin(name)</code></td><td>Switch skin.</td></tr><tr><td><code>set_attachment(slot, attachment)</code></td><td>Show a different image in a slot. An empty string goes back to what the animation shows.</td></tr><tr><td><code>get_animation_names()</code>, <code>get_skin_names()</code>, <code>get_bone_names()</code></td><td>List what the skeleton contains.</td></tr><tr><td><code>get_bone_position(bone)</code>, <code>get_bone_rotation(bone)</code></td><td>Where a bone is right now, in the sprite node's local space.</td></tr><tr><td><code>reload()</code></td><td>Load the files again after re-exporting.</td></tr></table>
+<p>Signals: <code>animation_event</code>, <code>animation_completed</code>, <code>world_updated</code>, <code>skeleton_loaded</code>.</p>
+<p><b>Tracks</b> let animations play on top of each other. For example, legs run on track 0 while an "aim" animation plays on track 1: <code>hero.play(&quot;aim&quot;, true, 1)</code>.</p>
+<h3 id="attach-something-to-a-bone">Attach something to a bone</h3>
+<p>Add an <b>Osteon2DBoneFollower</b> node, set <b>Sprite Path</b> to the Osteon2DSprite and <b>Bone Name</b> to the bone (for example <code>hand_r</code>). Its children then follow that bone. Use <code>follow_position</code>, <code>follow_rotation</code>, <code>follow_scale</code>, <code>local_offset</code> and <code>rotation_offset_degrees</code> to fine-tune.</p>
+<h3 id="exporting-your-game">Exporting your game</h3>
+<p>Godot does not pack unknown file types by default. Under <b>Project &gt; Export &gt; Resources</b>, add <code>*.osteon, *.json, *.atlas</code> to <b>Filters to export non-resource files/folders</b>, or the character will be missing in the exported game.</p>
+<hr>
+<h2 id="3-unity">3. Unity</h2>
+<p class="warn"><b>Not yet tested inside a real Unity editor.</b> The code compiles against the Unity APIs it uses, and the animation core gives the same results as the Osteon2D editor. The scene components, importers and shaders still need a first real run. If something breaks, please open an issue with the Unity version and the console error.</p>
+<h3 id="install-2">Install</h3>
+<ol><li>Open <b>Window &gt; Package Manager</b>, click <b>+</b>, choose <b>Add package from disk...</b> and pick <code>runtimes/unity/com.osteon2d.runtime/package.json</code>. Or copy the <code>com.osteon2d.runtime</code> folder into your project's <code>Packages/</code> folder.</li></ol>
+<h3 id="show-a-character-2">Show a character</h3>
+<ol><li>Copy the exported files (<code>hero.json</code> or <code>hero.osteon</code>, <code>hero.atlas</code>, <code>hero.png</code>) into one folder under <code>Assets/</code>. The package imports <code>.osteon</code> and <code>.atlas</code> files as text assets automatically.</li><li>In the Project window, right-click the skeleton file (<code>hero.json</code> or <code>hero.osteon</code>) and choose <b>Create &gt; Osteon2D &gt; Skeleton Data From Selection</b>.<ul><li>This creates <code>hero_SkeletonData.asset</code>, linked to the atlas next to it (<code>hero.atlas</code>, or the only <code>.atlas</code> in that folder) and its page images, with one material per page and blend mode.</li></ul></li><li>Choose <b>GameObject &gt; Osteon2D &gt; Skeleton Animation</b>, or add the <b>Osteon2D/Skeleton Animation</b> component to any GameObject.</li><li>Drag the data asset into <b>Skeleton Data Asset</b>, and type an animation name into <b>Animation Name</b>.</li><li>The character previews in the Scene view (<b>Preview In Edit Mode</b>) and plays when you press Play.</li></ol>
+<p>Settings on the <b>Skeleton Data</b> asset:</p>
+<table><tr><th>Field</th><th>What it does</th></tr><tr><td><code>scale</code></td><td>Pixels to Unity units. The default <code>0.01</code> means 100 pixels = 1 unit.</td></tr><tr><td><code>defaultMix</code></td><td>Default crossfade time between animations, in seconds.</td></tr></table>
+<p>Settings on the <b>Skeleton Animation</b> component:</p>
+<table><tr><th>Field</th><th>What it does</th></tr><tr><td><code>initialSkin</code></td><td>Skin at start (<code>default</code>).</td></tr><tr><td><code>animationName</code>, <code>loop</code></td><td>What plays at start.</td></tr><tr><td><code>timeScale</code></td><td>Playback speed.</td></tr><tr><td><code>updateMode</code></td><td><code>Update</code>, <code>LateUpdate</code>, <code>FixedUpdate</code> or <code>Manual</code> (you call <code>Advance(delta)</code>).</td></tr><tr><td><code>flipX</code>, <code>flipY</code></td><td>Mirror the character.</td></tr><tr><td><code>tintBlack</code></td><td>Use the two-colour (tint black) shader.</td></tr><tr><td><code>clipping</code></td><td>Apply clipping attachments.</td></tr><tr><td><code>sortingLayerName</code>, <code>sortingOrder</code></td><td>2D sorting, like a SpriteRenderer.</td></tr></table>
+<h3 id="control-it-from-a-script-2">Control it from a script</h3>
+<pre><code class="lang-csharp">using UnityEngine;
+using Osteon2D;
+
+public class HeroController : MonoBehaviour
+{
+    OsteonSkeletonAnimation anim;
+
+    void Start()
+    {
+        anim = GetComponent&lt;OsteonSkeletonAnimation&gt;();
+        anim.State.SetMix(&quot;run&quot;, &quot;jump&quot;, 0.05f);     // crossfade for this pair
+        anim.Play(&quot;idle&quot;);                           // track 0, looping
+        anim.AnimationEvent += (track, e) =&gt;
+        {
+            if (e.name == &quot;footstep&quot;) GetComponent&lt;AudioSource&gt;().Play();
+        };
+    }
+
+    void Update()
+    {
+        if (Input.GetButtonDown(&quot;Jump&quot;))
+        {
+            anim.Play(&quot;jump&quot;, false);                   // play once...
+            anim.State.AddAnimation(0, &quot;idle&quot;, true, 0); // ...then back to idle
+        }
+        anim.flipX = Input.GetAxisRaw(&quot;Horizontal&quot;) &lt; 0;
+    }
+}</code></pre>
+<p>More calls:</p>
+<table><tr><th>Call</th><th>What it does</th></tr><tr><td><code>Play(name, loop = true, track = 0)</code></td><td>Start an animation now.</td></tr><tr><td><code>State.AddAnimation(track, name, loop, delay)</code></td><td>Queue one after the current animation.</td></tr><tr><td><code>State.SetMix(from, to, seconds)</code></td><td>Crossfade time for one pair.</td></tr><tr><td><code>State.ClearTrack(track)</code></td><td>Stop a track.</td></tr><tr><td><code>SetSkin(name)</code></td><td>Switch skin.</td></tr><tr><td><code>SetAttachment(slot, attachment)</code></td><td>Show a different image in a slot.</td></tr><tr><td><code>BoneWorldPosition(bone)</code></td><td>Where a bone is, in world space.</td></tr><tr><td><code>Initialize(true)</code></td><td>Reload after replacing the data.</td></tr></table>
+<p>Events: <code>AnimationEvent</code> (each event key the playhead passes; <code>e.name</code>, <code>e.intValue</code>, <code>e.floatValue</code>, <code>e.stringValue</code>), <code>UpdateWorld</code> (after the pose is computed, a good place to adjust bones) and <code>MeshRebuilt</code>.</p>
+<h3 id="attach-something-to-a-bone-2">Attach something to a bone</h3>
+<p>Add the <b>Osteon2D/Bone Follower</b> component to a GameObject, set <b>Skeleton Animation</b> and <b>Bone Name</b>. Use <code>followPosition</code>, <code>followRotation</code>, <code>followScale</code>, <code>localOffset</code> and <code>rotationOffset</code> to fine-tune.</p>
+<hr>
+<h2 id="4-updating-art-or-animation">4. Updating art or animation</h2>
+<ol><li>Change the project in Osteon2D and save it.</li><li>Export the JSON again, and run the Texture Packer again if any images changed.</li><li>Overwrite the files in your game project.<ul><li><b>Godot:</b> the sprite reloads when the paths change. Otherwise call <code>reload()</code> or reopen the scene.</li><li><b>Unity:</b> the text assets reimport. Reselect the component, or call <code>Initialize(true)</code> from code.</li></ul></li></ol>
+<h2 id="5-what-the-runtimes-do-not-support-yet">5. What the runtimes do not support yet</h2>
+<ul><li>Path constraints, physics constraints and slider constraints (they are loaded but not applied).</li><li>Spine 4.3 transform-constraint property links.</li><li>Binary <code>.skel</code> files.</li><li>Unity UI (Canvas) rendering, and Timeline or Mecanim integration.</li><li>Tint black in Godot. Screen blend mode in Godot is drawn as additive.</li></ul>
+<h2 id="6-troubleshooting">6. Troubleshooting</h2>
+<table><tr><th>Problem</th><th>Fix</th></tr><tr><td>Nothing shows up</td><td>Check the skeleton and atlas paths, and that the animation and skin names are spelled exactly as in Osteon2D.</td></tr><tr><td>Some images are missing</td><td>The atlas was packed from a different images folder, or images were added after packing. Run the Texture Packer again on the folder the project uses.</td></tr><tr><td>The character is huge or tiny (Unity)</td><td>Change <code>scale</code> on the Skeleton Data asset (0.01 = 100 px per unit).</td></tr><tr><td>Works in the Godot editor but not in the exported game</td><td>Add <code>*.osteon, *.json, *.atlas</code> to the export resource filters.</td></tr><tr><td>"No .atlas file was found" (Unity)</td><td>Put the <code>.atlas</code> next to the skeleton file, ideally with the same name.</td></tr><tr><td>A Unity error you cannot explain</td><td>Please open an issue: the Unity layer has not been tested in the real editor yet.</td></tr></table>
+<p>Questions and bug reports: <a href="https://github.com/Divyash93/Osteon2D/issues">https://github.com/Divyash93/Osteon2D/issues</a></p><p style="color:var(--mute);font-size:14px">This page is built from <a href="https://github.com/Divyash93/Osteon2D/blob/main/docs/runtimes/USER_GUIDE.md">docs/runtimes/USER_GUIDE.md</a>.</p><footer>Osteon2D is MIT licensed and independent: not affiliated with Esoteric Software. "Spine" is a trademark of Esoteric Software LLC. &middot; <a href="https://github.com/Divyash93/Osteon2D">Source</a></footer></div></body></html>

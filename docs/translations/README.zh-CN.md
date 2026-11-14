@@ -30,7 +30,7 @@ Osteon2D 是一款原生桌面编辑器：在美术素材上创建骨骼层级�
 
 ## 运行时（即将推出）
 
-`runtimes/` 目录中提供 **Godot 4**（GDScript）和 **Unity**（C#）运行时。Unity 版本尚未在真实的 Unity 中运行过。二进制 `.skel` 导出为实验性功能。Web 和 C/C++ 引擎仍在计划中。
+`runtimes/` 目录中提供 **Godot 4**（GDScript）和 **Unity**（C#）运行时。Unity 版本尚未在真实的 Unity 中运行过。二进制 `.skel` 导出为实验性功能。Web 和 C/C++ 引擎仍在计划中。 使用指南（英文）：[docs/runtimes/USER_GUIDE.md](../runtimes/USER_GUIDE.md)。
 
 ## 语言
 

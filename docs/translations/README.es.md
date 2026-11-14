@@ -30,7 +30,7 @@ Consigue el instalador más reciente en la **[página de Releases](https://githu
 
 ## Runtimes (próximamente)
 
-Hay runtimes para **Godot 4** (GDScript) y **Unity** (C#) en la carpeta `runtimes/`. El de Unity todavía no se ha probado dentro de Unity real. La exportación binaria `.skel` es experimental. Web y motores C/C++ siguen planificados.
+Hay runtimes para **Godot 4** (GDScript) y **Unity** (C#) en la carpeta `runtimes/`. El de Unity todavía no se ha probado dentro de Unity real. La exportación binaria `.skel` es experimental. Web y motores C/C++ siguen planificados. Guía de uso (en inglés): [docs/runtimes/USER_GUIDE.md](../runtimes/USER_GUIDE.md).
 
 ## Idiomas
 

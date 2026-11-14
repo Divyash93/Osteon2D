@@ -92,12 +92,14 @@ Osteon2D is early software (**version 0.1.0**). It is already usable for real ri
 
 ## Runtimes
 
-A runtime is the small library a game uses to load and play your animations. Osteon2D ships runtimes in [`runtimes/`](runtimes) (see [`runtimes/README.md`](runtimes/README.md) for exactly what each one supports):
+A runtime is the small library a game uses to load and play your animations. **Osteon2D includes runtimes for Godot 4 and Unity** in [`runtimes/`](runtimes).
+
+**New to them? Read the [runtime user guide](docs/runtimes/USER_GUIDE.md)** ([also on the website](https://divyash93.github.io/Osteon2D/runtime-guide.html)): exporting from Osteon2D, installing, showing a character, scripting playback, mixing, skins, events, bone followers and troubleshooting. [`runtimes/README.md`](runtimes/README.md) lists exactly what each runtime supports and how it was verified.
 
 | Engine / platform | Status |
 |---|---|
-| Godot 4 | GDScript core (loader, skeleton, IK, transform constraints, timelines, AnimationState) checked against the C++ engine with headless Godot; rendering node `Osteon2DSprite` |
-| Unity | C# core checked against the C++ engine; `SkeletonAnimation` renderer, importers and shaders written but **not yet run inside a real Unity editor** |
+| Godot 4 (included) | GDScript core (loader, skeleton, IK, transform constraints, timelines, AnimationState) checked against the C++ engine with headless Godot; rendering node `Osteon2DSprite` |
+| Unity (included) | C# core checked against the C++ engine; `SkeletonAnimation` renderer, importers and shaders written but **not yet run inside a real Unity editor** |
 | Web, libGDX, Cocos, SDL and custom C / C++ engines | Planned |
 
 They read the Spine JSON that Osteon2D exports. File > Export > Binary also writes a compact `.skel`; that writer is **experimental** and has only been checked by round trip through Osteon2D's own reader, not against Esoteric's loaders. The animation engine in [`src/engine/`](src/engine) has no UI code, which makes it the natural starting point for a C++ runtime and for ports to other languages.

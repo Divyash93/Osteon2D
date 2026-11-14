@@ -1,5 +1,7 @@
 # Osteon2D runtimes
 
+**Step-by-step instructions: [runtime user guide](../docs/runtimes/USER_GUIDE.md)** (exporting, installing, scripting, bone followers, troubleshooting).
+
 Runtimes play animations made in Osteon2D inside a game engine. They read the **Spine 4.2 JSON** that Osteon2D exports (File > Export > JSON), or the `.osteon` project file directly, together with the **libGDX-style `.atlas`** and page PNGs written by Osteon2D's Texture Packer.
 
 | Engine | Folder | Language | Status |
