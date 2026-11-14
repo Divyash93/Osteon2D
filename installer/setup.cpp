@@ -151,6 +151,8 @@ bool install(const std::wstring& folder, bool desktop, bool assoc, std::wstring&
     progress(45, L"Copying the documentation...");
     std::vector<BYTE> readme = resource(103);
     if (!readme.empty()) writeFile(folder + L"\\README.md", readme.data(), readme.size());
+    std::vector<BYTE> license = resource(104); // the Osteon 2D Community License travels with every copy
+    if (!license.empty()) writeFile(folder + L"\\LICENSE.txt", license.data(), license.size());
     progress(60, L"Writing the uninstaller...");
     wchar_t self[MAX_PATH];
     GetModuleFileNameW(nullptr, self, MAX_PATH);
@@ -205,6 +207,7 @@ int runUninstall() {
     }
     DeleteFileW((folder + L"\\Osteon.exe").c_str());
     DeleteFileW((folder + L"\\README.md").c_str());
+    DeleteFileW((folder + L"\\LICENSE.txt").c_str());
     // This program is running from the folder: remove it, and the folder, once the process has ended.
     std::wstring cmd = L"cmd.exe /c ping -n 3 127.0.0.1 >nul & del /f /q \"" + folder + L"\\Uninstall.exe\" & rmdir \"" + folder + L"\"";
     STARTUPINFOW si = {sizeof si}; si.dwFlags = STARTF_USESHOWWINDOW; si.wShowWindow = SW_HIDE;

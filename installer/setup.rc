@@ -3,3 +3,4 @@
 101 RCDATA "banner.jpg"
 102 RCDATA "../build/Osteon.exe"
 103 RCDATA "../README.md"
+104 RCDATA "../LICENSE"

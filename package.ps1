@@ -13,6 +13,7 @@ Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $dist
 New-Item -ItemType Directory -Force -Path $app | Out-Null
 Copy-Item "$root\build\Osteon.exe" $app
 Copy-Item "$root\README.md" $app
+Copy-Item "$root\LICENSE" (Join-Path $app 'LICENSE.txt')   # the license must accompany every copy
 Copy-Item "$root\installer\install.ps1", "$root\installer\uninstall.ps1" $app
 Compress-Archive -Path "$app\*" -DestinationPath (Join-Path $dist 'Osteon-0.1.0-win64.zip') -Force
 
