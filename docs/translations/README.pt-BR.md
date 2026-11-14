@@ -28,13 +28,13 @@ Baixe o instalador mais recente na **[página de Releases](https://github.com/Di
 - **Saída:** `.ost`, JSON do Spine, sequências PNG, GIF, vídeo e atlas de texturas.
 - Salvamento automático com recuperação de falhas; desfazer e refazer em todas as edições.
 
-## Runtimes (em breve)
+## Runtimes (incluídos)
 
 Há runtimes para **Godot 4** (GDScript) e **Unity** (C#) na pasta `runtimes/`. O do Unity ainda não foi executado em um Unity real. A exportação binária `.skel` é experimental. Web e engines C/C++ continuam planejados. Guia de uso (em inglês): [docs/runtimes/USER_GUIDE.md](../runtimes/USER_GUIDE.md).
 
 ## Idiomas
 
-Este README está disponível em seis idiomas. A interface do editor está por enquanto em inglês; **mais idiomas de interface chegam em breve.**
+Este README está disponível em seis idiomas. A interface do editor está disponível em 8 idiomas (Configurações > Geral > Idioma): inglês, espanhol, francês, alemão, português (BR), hindi, chinês simplificado e japonês. Mensagens de status e textos de ajuda longos continuam em inglês.
 
 ## Licença e aviso legal
 
