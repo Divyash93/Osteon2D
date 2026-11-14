@@ -2,7 +2,7 @@
 
 # Osteon2D
 
-**Windows 向けの無料・オープンソースの 2D スケルタルアニメーションエディター。**
+**Windows 向けの無料の 2D スケルタルアニメーションエディター（ソースコード公開）。**
 
 [English](../../README.md) · [हिन्दी](README.hi.md) · [Español](README.es.md) · [简体中文](README.zh-CN.md) · 日本語 · [Português (BR)](README.pt-BR.md)
 
@@ -38,4 +38,4 @@ Osteon2D は、アートワークの上にボーン階層を作り、画像や�
 
 ## ライセンスと法的事項
 
-Osteon2D は **MIT ライセンス**（[LICENSE](../../LICENSE)）で公開されています。サードパーティのコードはそれぞれのライセンスに従います（[THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md)）。Osteon2D は独立したプロジェクトであり、Esoteric Software とは提携・承認・後援の関係にありません。「Spine」は Esoteric Software LLC の商標です。
+Osteon2D は **Osteon 2D Community License (OCL) 1.0**（[LICENSE](../../LICENSE)）で公開されています。無料で使用・改変でき、作ったもの（ゲームやアニメーション）は販売できますが、Osteon2D 自体を販売することはできません。サードパーティのコードはそれぞれのライセンスに従います（[THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md)）。Osteon2D は独立したプロジェクトであり、Esoteric Software とは提携・承認・後援の関係にありません。「Spine」は Esoteric Software LLC の商標です。

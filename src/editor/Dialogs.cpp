@@ -215,6 +215,7 @@ void Editor::aboutDialog() {
     if (ImGui::SmallButton(tr("github.com/Divyash93"))) openUrl("https://github.com/Divyash93");
     if (ImGui::IsItemHovered()) ImGui::SetTooltip(tr("Open the author's GitHub page"));
     ImGui::Separator();
+    ImGui::TextDisabled(tr("Osteon 2D Community License (OCL) 1.0: free to use, share and modify; what you make with it is yours to sell, but Osteon itself may not be sold."));
     ImGui::TextDisabled(tr("Third-party: Dear ImGui (MIT), nlohmann/json (MIT)."));
     ImGui::TextDisabled(tr("Not affiliated with Esoteric Software. Spine is a trademark of Esoteric Software LLC."));
     ImGui::End();

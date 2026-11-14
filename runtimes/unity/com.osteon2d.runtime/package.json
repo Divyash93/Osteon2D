@@ -6,5 +6,5 @@
   "description": "Plays skeletal animations exported from Osteon2D (Spine 4.2 JSON + libGDX atlas) in Unity: MeshRenderer based SkeletonAnimation, bone followers, skins, mixing, events, clipping, tint black and blend modes.",
   "keywords": ["2d", "skeletal", "animation", "osteon2d", "spine-json"],
   "author": { "name": "Osteon2D contributors", "url": "https://github.com/Divyash93/Osteon2D" },
-  "license": "MIT"
+  "license": "SEE LICENSE IN LICENSE.md"
 }

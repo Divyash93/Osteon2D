@@ -4,12 +4,12 @@
 
 # Osteon2D
 
-**A free, open-source 2D skeletal animation editor for Windows.**
+**A free, source-available 2D skeletal animation editor for Windows.**
 
 Rig characters with bones, deform them with meshes and weights, and animate them on a dopesheet and graph editor.
 
 [![Latest release](https://img.shields.io/github/v/release/Divyash93/Osteon2D?style=flat-square&label=download&color=2f81f7)](https://github.com/Divyash93/Osteon2D/releases/latest)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
+[![License: Osteon 2D Community License 1.0](https://img.shields.io/badge/license-OCL%201.0-green?style=flat-square)](LICENSE)
 ![Platform: Windows 10/11](https://img.shields.io/badge/platform-Windows%2010%2F11-0078d4?style=flat-square)
 ![C++20](https://img.shields.io/badge/C%2B%2B-20-00599c?style=flat-square)
 ![Status: early alpha](https://img.shields.io/badge/status-early%20alpha-orange?style=flat-square)
@@ -155,9 +155,14 @@ Issues and pull requests are welcome. Please run `build.bat test` before sending
 
 ## License
 
-Osteon2D is released under the **[MIT License](LICENSE)**: free to use, modify and distribute, including commercially, as long as the copyright notice is kept. Third-party code keeps its own licences; see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). Your own artwork and animations are yours; Osteon2D claims no rights over what you make with it.
+Osteon2D is released under the **[Osteon 2D Community License (OCL) 1.0](LICENSE)**. In short (the [LICENSE](LICENSE) file is what counts):
 
-The name "Osteon2D" and its logo are the author's and are not granted by the MIT License.
+- **Free to use, study and modify**, and to share original or modified copies **free of charge**.
+- **Make and sell anything with it.** Animations, assets and games you create with Osteon2D, including commercial games built with Unity, Godot or other engines, are yours to sell.
+- **Do not sell Osteon2D itself.** Selling copies or modified versions, charging for access, or offering it as a paid product or service needs written permission from Divyash Vishwakarma.
+- **Keep the credits.** Copyright notices and author credits must stay, forks must say they are unofficial, and the "Osteon 2D" name and logo are not licensed for implying official status.
+
+Third-party code keeps its own licences; see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). Versions published before 14 November 2026 were released under the MIT License.
 
 ## Legal
 

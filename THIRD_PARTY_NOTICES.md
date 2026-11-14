@@ -1,6 +1,6 @@
 # Third-party notices
 
-Osteon2D itself is released under the MIT License (see `LICENSE`). It includes, or is built with, the following third-party components. Each keeps its own licence.
+Osteon2D itself is released under the Osteon 2D Community License (OCL) 1.0 (see `LICENSE`). It includes, or is built with, the following third-party components. Each keeps its own licence.
 
 | Component | Where | Licence | Copyright |
 |---|---|---|---|

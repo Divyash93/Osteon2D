@@ -2,7 +2,7 @@
 
 # Osteon2D
 
-**Um editor gratuito e de código aberto de animação esquelética 2D para Windows.**
+**Um editor gratuito de animação esquelética 2D para Windows, com código-fonte disponível.**
 
 [English](../../README.md) · [हिन्दी](README.hi.md) · [Español](README.es.md) · [简体中文](README.zh-CN.md) · [日本語](README.ja.md) · Português (BR)
 
@@ -38,4 +38,4 @@ Este README está disponível em seis idiomas. A interface do editor está dispo
 
 ## Licença e aviso legal
 
-O Osteon2D é distribuído sob a **licença MIT** ([LICENSE](../../LICENSE)). O código de terceiros mantém a sua própria licença ([THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md)). O Osteon2D é um projeto independente, sem afiliação, endosso ou patrocínio da Esoteric Software; "Spine" é marca registrada da Esoteric Software LLC.
+O Osteon2D é distribuído sob a **Osteon 2D Community License (OCL) 1.0** ([LICENSE](../../LICENSE)): uso e modificação gratuitos, e você pode vender o que criar com ele (jogos, animações), mas não vender o Osteon2D em si. O código de terceiros mantém a sua própria licença ([THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md)). O Osteon2D é um projeto independente, sem afiliação, endosso ou patrocínio da Esoteric Software; "Spine" é marca registrada da Esoteric Software LLC.

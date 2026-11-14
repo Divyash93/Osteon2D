@@ -90,4 +90,4 @@ Add an **Osteon2DBoneFollower** node, assign the sprite and a bone name, to atta
 
 ## Licence
 
-MIT, like the rest of Osteon2D. "Spine" is a trademark of Esoteric Software LLC; Osteon2D is not affiliated with it.
+The runtimes are part of Osteon2D and are covered by the [Osteon 2D Community License (OCL) 1.0](../LICENSE), a copy of which ships inside each runtime folder. You may include them in games you sell; you may not sell the runtimes themselves. "Spine" is a trademark of Esoteric Software LLC; Osteon2D is not affiliated with it.

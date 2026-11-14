@@ -2,7 +2,7 @@
 
 # Osteon2D
 
-**适用于 Windows 的免费开源 2D 骨骼动画编辑器。**
+**适用于 Windows 的免费 2D 骨骼动画编辑器（源代码公开）。**
 
 [English](../../README.md) · [हिन्दी](README.hi.md) · [Español](README.es.md) · 简体中文 · [日本語](README.ja.md) · [Português (BR)](README.pt-BR.md)
 
@@ -38,4 +38,4 @@ Osteon2D 是一款原生桌面编辑器：在美术素材上创建骨骼层级�
 
 ## 许可证与法律声明
 
-Osteon2D 采用 **MIT 许可证**（[LICENSE](../../LICENSE)）。第三方代码保留各自的许可证（[THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md)）。Osteon2D 是独立项目，与 Esoteric Software 无隶属、背书或赞助关系；“Spine”是 Esoteric Software LLC 的商标。
+Osteon2D 采用 **Osteon 2D Community License (OCL) 1.0**（[LICENSE](../../LICENSE)）：可免费使用和修改，用它制作的作品（游戏、动画）可以出售，但不得出售 Osteon2D 本身。第三方代码保留各自的许可证（[THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md)）。Osteon2D 是独立项目，与 Esoteric Software 无隶属、背书或赞助关系；“Spine”是 Esoteric Software LLC 的商标。

@@ -7,7 +7,7 @@ Osteon2D ships two runtimes that play your animations inside a game engine:
 | **Godot 4.3+** | [`runtimes/godot/addons/osteon2d`](../../runtimes/godot/addons/osteon2d) | Core checked against the editor's own engine in headless Godot 4.7; the sprite node renders correctly in a real window. |
 | **Unity 2021.3+** | [`runtimes/unity/com.osteon2d.runtime`](../../runtimes/unity/com.osteon2d.runtime) | Core checked against the editor's engine. The Unity components, importers and shaders compile, but **have not yet been run inside a real Unity editor**. Please report anything that goes wrong. |
 
-Both are MIT licensed, like the editor, and contain no Esoteric Software code.
+Both are covered by the [Osteon 2D Community License](../../LICENSE), like the editor: you may ship them inside games you sell, but not sell the runtimes themselves. They contain no Esoteric Software code.
 
 ---
 
