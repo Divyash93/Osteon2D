@@ -30,6 +30,7 @@ struct Draft {
     int panelOpacity = 80;
     bool autoKeyDefault = false;
     ImVec4 meshDot{1.0f, 1.0f, 1.0f, 0.90f}, meshVertex{1.0f, 0.78f, 0.16f, 1.0f};
+    Color boneColor{0x98 / 255.0f, 0x98 / 255.0f, 0x98 / 255.0f, 1};
 };
 
 enum Page { kFiles, kGeneral, kInterface, kViewport, kDopesheet, kPageCount };
@@ -80,6 +81,8 @@ void Editor::loadSettingsFile() {
     ghostAlpha = std::max(0.05f, std::min(1.0f, num("ghostAlpha", ghostAlpha)));
     panelOpacity = std::max(20, std::min(100, (int)num("panelOpacity", (float)panelOpacity)));
     autoKeyDefault = num("autoKeyDefault", autoKeyDefault ? 1.f : 0.f) != 0;
+    if (kv.count("boneR")) boneDefaultColor = Color(num("boneR", boneDefaultColor.r), num("boneG", boneDefaultColor.g), num("boneB", boneDefaultColor.b), 1);
+    lineBonesAll = flag("lineBones", lineBonesAll);
     if (kv.count("bgAr")) bgA = Color(num("bgAr", bgA.r), num("bgAg", bgA.g), num("bgAb", bgA.b), 1);
     if (kv.count("bgBr")) bgB = Color(num("bgBr", bgB.r), num("bgBg", bgB.g), num("bgBb", bgB.b), 1);
 }
@@ -90,7 +93,8 @@ void Editor::saveSettingsFile() const {
       << "\ndopeRow " << dopeRowHeight << "\ntreeIndent " << treeIndent << "\ngizmoSize " << gizmoSize << "\naxes " << showAxes << "\nimageNames " << showImageNames << "\nrulers " << showRulers
       << "\nselBones " << selectBones << "\nselImages " << selectImages << "\nselOthers " << selectOthers << "\nghosting " << ghosting
       << "\nghostFrames " << ghostFrames << "\nghostStep " << ghostStep << "\nghostAlpha " << ghostAlpha << "\npanelOpacity " << panelOpacity << "\nautoKeyDefault " << (autoKeyDefault ? 1 : 0)
-      << "\nbgAr " << bgA.r << "\nbgAg " << bgA.g << "\nbgAb " << bgA.b << "\nbgBr " << bgB.r << "\nbgBg " << bgB.g << "\nbgBb " << bgB.b << "\n";
+      << "\nbgAr " << bgA.r << "\nbgAg " << bgA.g << "\nbgAb " << bgA.b << "\nbgBr " << bgB.r << "\nbgBg " << bgB.g << "\nbgBb " << bgB.b
+      << "\nboneR " << boneDefaultColor.r << "\nboneG " << boneDefaultColor.g << "\nboneB " << boneDefaultColor.b << "\nlineBones " << lineBonesAll << "\n";
     writeTextFile(joinPath(appDataDir(), "settings.txt"), o.str());
 }
 
@@ -116,7 +120,7 @@ void Editor::settingsDialog() {
         d.defaultFps = Document::defaultFps; d.dopeRow = dopeRowHeight; d.treeIndent = treeIndent; d.gizmoSize = gizmoSize; d.bgA = bgA; d.bgB = bgB;
         d.axes = showAxes; d.imageNames = showImageNames; d.rulers = showRulers;
         d.selBones = selectBones; d.selImages = selectImages; d.selOthers = selectOthers;
-        d.ghosting = ghosting; d.ghostFrames = ghostFrames; d.ghostStep = ghostStep; d.ghostAlpha = ghostAlpha; d.panelOpacity = panelOpacity; d.autoKeyDefault = autoKeyDefault; d.meshDot = meshDotColor; d.meshVertex = meshSelColor;
+        d.ghosting = ghosting; d.ghostFrames = ghostFrames; d.ghostStep = ghostStep; d.ghostAlpha = ghostAlpha; d.panelOpacity = panelOpacity; d.autoKeyDefault = autoKeyDefault; d.meshDot = meshDotColor; d.boneColor = boneDefaultColor; d.meshVertex = meshSelColor;
     }
     const float u = uiScale;
 
@@ -199,6 +203,12 @@ void Editor::settingsDialog() {
         row(tr("Panel opacity"), tr("How opaque the floating toolbar at the bottom of the viewport is, in percent."), [&] { sliderInt("##panelop", &d.panelOpacity, 20, 100, "%d%%"); });
         row(tr("Mesh dots"), tr("The colour of a mesh's dots in the viewport."), [&] { ImGui::ColorEdit4("##meshdot", &d.meshDot.x, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreviewHalf); });
         row(tr("Mesh vertices"), tr("The colour of the selected vertices while editing a mesh."), [&] { ImGui::ColorEdit4("##meshvtx", &d.meshVertex.x, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_AlphaPreviewHalf); });
+        row(tr("Bone color"), tr("The colour bones are drawn with when they still have the default grey. A bone given its own colour in its properties keeps it. This only changes the display, not exported files."), [&] {
+            float c[3] = {d.boneColor.r, d.boneColor.g, d.boneColor.b};
+            if (ImGui::ColorEdit3("##bonecolor", c, ImGuiColorEditFlags_NoInputs)) d.boneColor = Color(c[0], c[1], c[2], 1);
+            ImGui::SameLine();
+            if (ImGui::SmallButton(tr("Reset##bonecolor"))) d.boneColor = Color(0x98 / 255.0f, 0x98 / 255.0f, 0x98 / 255.0f, 1);
+        });
         row(tr("Transform control size"), tr("The size of the transform controls (gizmos) in the viewport, from 1 (smallest) to 4 (largest). 2 is the default."), [&] { sliderInt("##gizmosize", &d.gizmoSize, 1, 4, "%d"); });
         row(tr("Tree indentation"), tr("The amount in pixels to indent nodes in the tree view hierarchy."), [&] { sliderInt("##indent", &d.treeIndent, 4, 40, "%d"); });
         break;
@@ -249,7 +259,7 @@ void Editor::settingsDialog() {
         bgA = d.bgA; bgB = d.bgB;
         showAxes = d.axes; showRulers = d.rulers; showImageNames = d.imageNames;
         selectBones = d.selBones; selectImages = d.selImages; selectOthers = d.selOthers;
-        ghosting = d.ghosting; ghostFrames = d.ghostFrames; ghostStep = d.ghostStep; ghostAlpha = d.ghostAlpha; panelOpacity = d.panelOpacity; autoKeyDefault = d.autoKeyDefault; doc.autoKey = autoKeyDefault; meshDotColor = d.meshDot; meshSelColor = d.meshVertex;
+        ghosting = d.ghosting; ghostFrames = d.ghostFrames; ghostStep = d.ghostStep; ghostAlpha = d.ghostAlpha; panelOpacity = d.panelOpacity; autoKeyDefault = d.autoKeyDefault; doc.autoKey = autoKeyDefault; meshDotColor = d.meshDot; boneDefaultColor = d.boneColor; meshSelColor = d.meshVertex;
         if (themeChanged) {
             gLightUi = d.light;
             applyUiTheme(uiScale, gLightUi);

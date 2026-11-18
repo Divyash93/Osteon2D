@@ -1,6 +1,7 @@
 // The editor application: owns the document, renderer and all views (Dear ImGui, docked).
 #pragma once
 #include "Document.h"
+#include <cmath>
 #include <map>
 #include <set>
 #include "Gfx.h"
@@ -129,7 +130,15 @@ struct Editor {
     // Hover feedback (what the mouse is over) and gizmo state.
     int hoverBone = -1, hoverSlot = -1, hoverHandle = 0;
     float toolbarTop = 0;
-    bool lineBonesAll = false;    // Views > Line Bones: every bone is drawn as a plain line
+    bool lineBonesAll = false;    // the "Lines" toggle in the viewport toolbar: every bone is drawn as a plain line
+    // Settings > User interface > Bone color: bones still at the default grey are drawn in this colour (display only;
+    // a bone given its own colour keeps it, and exported files are unchanged).
+    Color boneDefaultColor{0x98 / 255.0f, 0x98 / 255.0f, 0x98 / 255.0f, 1};
+    Color boneDrawColor(const Color& c) const {
+        const float g = 0x98 / 255.0f, e = 0.6f / 255.0f;
+        bool isDefault = std::fabs(c.r - g) < e && std::fabs(c.g - g) < e && std::fabs(c.b - g) < e && std::fabs(c.a - 1) < e;
+        return isDefault ? boneDefaultColor : c;
+    }
     bool toolbarLocked = true;    // the toolbar panels move only when unlocked (the lock button)
     bool tbCustom = false;           // the panels were moved by hand: otherwise they follow the default row along the bottom
     bool resetToolbarPanels = false; // Reset Layout also puts the toolbar panels back

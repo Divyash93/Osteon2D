@@ -553,8 +553,8 @@ void Editor::drawOverlay(ImDrawList* dl) {
             // While picking a parent, the hovered bone is the candidate: amber, so it reads as a target.
             bool target = picking() && (int)i == hoverBone;
             bool hov = (int)i == hoverBone && (!sel || target);
-            ImU32 col = target ? IM_COL32(255, 190, 60, 255) : sel ? kSelect : hov ? IM_COL32(255, 255, 255, 255) : pend ? IM_COL32(255, 150, 40, 255) : toU32(bd.color);
-            ImU32 fill = target ? IM_COL32(255, 190, 60, 110) : sel ? kSelectFill : hov ? IM_COL32(255, 255, 255, 80) : pend ? IM_COL32(255, 150, 40, 70) : toU32(bd.color, 0.35f);
+            ImU32 col = target ? IM_COL32(255, 190, 60, 255) : sel ? kSelect : hov ? IM_COL32(255, 255, 255, 255) : pend ? IM_COL32(255, 150, 40, 255) : toU32(boneDrawColor(bd.color));
+            ImU32 fill = target ? IM_COL32(255, 190, 60, 110) : sel ? kSelectFill : hov ? IM_COL32(255, 255, 255, 80) : pend ? IM_COL32(255, 150, 40, 70) : toU32(boneDrawColor(bd.color), 0.35f);
             if (auto wc = weightBoneColors.find((int)i); wc != weightBoneColors.end() && !target) {
                 // Bound bones show their weight colour; the ones selected in the Weights view are drawn solid.
                 ImU32 c = wc->second;
@@ -2231,7 +2231,14 @@ void Editor::viewportToolbarImpl() {
         cdl->AddCircleFilled(cc, 3.5f * u, flag ? uiG(theme::hex(theme::kText)) : uiG(theme::hex(theme::kTextDisabled)));
         if (hovered) ImGui::SetTooltip("%s: %s", tip, flag ? "on" : "off");
     };
-    ImGui::Dummy(ImVec2(labelW, rowH));
+    {   // Top-left of the grid: the line bones toggle (every bone drawn as a plain line), remembered between sessions.
+        ImGui::PushStyleColor(ImGuiCol_Button, lineBonesAll ? ImVec4(0.16f, 0.52f, 0.75f, 1) : uiRaised());
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2 * u, ImGui::GetStyle().FramePadding.y));
+        if (ImGui::Button(tr("Lines##linebones"), ImVec2(labelW, rowH))) { lineBonesAll = !lineBonesAll; saveSettingsFile(); }
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor();
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("%s: %s", tr("Line bones: draw every bone as a plain line"), lineBonesAll ? tr("on") : tr("off"));
+    }
     for (Icon ic : {Icon::Search, Icon::Eye, Icon::Key}) {
         ImGui::SameLine(0, 2 * u);
         ImGui::Dummy(ImVec2(cellW, rowH));
