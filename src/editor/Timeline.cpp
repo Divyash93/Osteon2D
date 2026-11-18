@@ -743,38 +743,40 @@ void Editor::dopesheetView() {
         drawIcon(dl, timelineIcon(tl.type), ImVec2(origin.x + indent + iconSize / 2, y + rowH / 2), iconSize, keyColor(tl.type));
         std::string kind = tl.type == TimelineType::Deform ? "deform " + tl.attachment : tl.type == TimelineType::PhysicsMix ? std::string("mix") : std::string(timelineName(tl.type));
         dl->AddText(ImVec2(origin.x + indent + iconSize + 6, y + 3), uiDimTextColor(), kind.c_str());
-        // Interpolation between keys drawn as the curve itself: a ramp for linear, an S for bezier, a flat run and a jump for
-        // stepped, a flat line when the values match. Keys are thin vertical bars.
+        // Interpolation between keys: a thin line through the middle of the row in the channel's colour. A curved (bezier)
+        // segment starts with a small hook drawn from its real easing shape; a stepped one ends with a small step mark; linear
+        // segments and unchanged values are a plain line. Keys are thin vertical bars.
         int vc = timelineValueCount(tl.type);
-        float cy = y + rowH / 2, r = 5;
-        float barH = rowH * 0.80f, topY = cy - barH * 0.5f + 2, botY = cy + barH * 0.5f - 2;
-        ImU32 lineCol = uiG(theme::hex(theme::kTextSecondary));
+        float cy = y + rowH / 2;
+        float barH = rowH * 0.80f;
+        const ImU32 kc = keyColor(tl.type);
+        const ImU32 lineCol = (kc & 0x00FFFFFF) | (200u << 24);
+        const float lineW = 1.3f;
+        const float hookH = std::max(3.0f, rowH * 0.22f); // how far below the line a hook starts
         dl->PushClipRect(ImVec2(canvasX, y), ImVec2(canvasX + canvasW, y + rowH), true); // nothing over the names
-        if (tl.keys.size() >= 2) { // a coloured strip from the first key to the last, as the channel's span
-            float sx0 = std::max(canvasX, frameToX(tl.keys.front().time * fps)), sx1 = std::min(canvasX + canvasW, frameToX(tl.keys.back().time * fps));
-            if (sx1 > sx0) {
-                ImU32 kc = keyColor(tl.type);
-                dl->AddRectFilled(ImVec2(sx0, y + 1), ImVec2(sx1, y + rowH - 1), (kc & 0x00FFFFFF) | (60u << 24));
-            }
-        }
         for (size_t k = 0; k + 1 < tl.keys.size() && vc > 0; k++) {
             const Key& ka = tl.keys[k];
             const Key& kb = tl.keys[k + 1];
             float x0 = frameToX(ka.time * fps), x1 = frameToX(kb.time * fps);
             if (x1 <= x0 || x1 < canvasX || x0 > canvasX + canvasW) continue;
+            const float gap = 2.5f;                 // the line stops just short of the key bars
+            float a = x0 + gap, b = x1 - gap;
+            if (b <= a) continue;
             bool differs = false;
             for (int v = 0; v < vc; v++) if (std::fabs(ka.v[v] - kb.v[v]) > 1e-4f) differs = true;
-            if (!differs) { dl->AddLine(ImVec2(x0, cy), ImVec2(x1, cy), lineCol); continue; }
-            bool up = kb.v[0] >= ka.v[0];
-            float yStart = up ? botY : topY, yEnd = up ? topY : botY;
-            if (ka.curve == CurveType::Stepped) {
-                dl->AddLine(ImVec2(x0, yStart), ImVec2(x1, yStart), lineCol, 1.2f);
-                dl->AddLine(ImVec2(x1, yStart), ImVec2(x1, yEnd), lineCol, 1.2f);
+            if (!differs || ka.curve == CurveType::Linear) { dl->AddLine(ImVec2(a, cy), ImVec2(b, cy), lineCol, lineW); continue; }
+            const float hookW = std::min(12.0f, (b - a) * 0.4f);
+            if (ka.curve == CurveType::Stepped) { // flat, then a small step just before the next key
+                float sx = b - hookW * 0.5f;
+                dl->AddLine(ImVec2(a, cy), ImVec2(sx, cy), lineCol, lineW);
+                dl->AddLine(ImVec2(sx, cy), ImVec2(sx, cy - hookH), lineCol, lineW);
+                dl->AddLine(ImVec2(sx, cy - hookH), ImVec2(b, cy - hookH), lineCol, lineW);
                 continue;
             }
-            bool bez = ka.curve == CurveType::Bezier && (int)ka.bezier.size() >= 4 && std::fabs(kb.v[0] - ka.v[0]) > 1e-6f;
-            int n = bez ? std::clamp((int)((x1 - x0) / 3), 8, 48) : 1;
-            ImVec2 pts[49];
+            // Bezier: the hook follows the segment's easing over its first few pixels, rising from below into the line.
+            bool bez = (int)ka.bezier.size() >= 4 && std::fabs(kb.v[0] - ka.v[0]) > 1e-6f;
+            const int n = 8;
+            ImVec2 pts[n + 1];
             for (int q = 0; q <= n; q++) {
                 float f = (float)q / n, e = f;
                 if (bez) {
@@ -782,9 +784,10 @@ void Editor::dopesheetView() {
                     float val = bezierValue(tm, ka.time, ka.v[0], ka.bezier[0], ka.bezier[1], ka.bezier[2], ka.bezier[3], kb.time, kb.v[0]);
                     e = std::clamp((val - ka.v[0]) / (kb.v[0] - ka.v[0]), -0.25f, 1.25f);
                 }
-                pts[q] = ImVec2(x0 + (x1 - x0) * f, yStart + (yEnd - yStart) * e);
+                pts[q] = ImVec2(a + hookW * f, cy + hookH * (1 - e));
             }
-            dl->AddPolyline(pts, n + 1, lineCol, 0, 1.4f);
+            dl->AddPolyline(pts, n + 1, lineCol, 0, lineW);
+            dl->AddLine(ImVec2(a + hookW, cy), ImVec2(b, cy), lineCol, lineW);
         }
         for (size_t k = 0; k < tl.keys.size(); k++) {
             float x = frameToX(tl.keys[k].time * fps);
