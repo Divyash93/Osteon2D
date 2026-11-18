@@ -672,7 +672,19 @@ void Editor::dopesheetView() {
         return out;
     };
 
+    // Row bands: bone / slot rows get a grey-green band, property rows a lighter grey one, with a thin line between rows.
+    // They are translucent so the frame grid shows through, and darker on the Light theme.
+    const ImU32 bandGroup = gLightUi ? IM_COL32(70, 110, 105, 70) : IM_COL32(125, 155, 150, 125);
+    const ImU32 bandProp = gLightUi ? IM_COL32(0, 0, 0, 22) : IM_COL32(255, 255, 255, 30);
+    const ImU32 bandLine = gLightUi ? IM_COL32(0, 0, 0, 40) : IM_COL32(0, 0, 0, 90);
+    auto rowBand = [&](float ry, ImU32 col) {
+        dl->AddRectFilled(ImVec2(origin.x, ry), ImVec2(canvasX + canvasW, ry + rowH), col);
+        dl->AddLine(ImVec2(origin.x, ry + rowH - 0.5f), ImVec2(canvasX + canvasW, ry + rowH - 0.5f), bandLine);
+    };
+
     for (const DRow& e : layout) {
+        if (e.kind == 1) rowBand(y, bandGroup);
+        else if (e.kind != 0) rowBand(y, bandProp);
         if (e.kind == 0 || e.kind == 1) {
             bool overview = e.kind == 0;
             Icon gi = Icon::Animations;
