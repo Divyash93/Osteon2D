@@ -553,8 +553,10 @@ void Editor::drawOverlay(ImDrawList* dl) {
             // While picking a parent, the hovered bone is the candidate: amber, so it reads as a target.
             bool target = picking() && (int)i == hoverBone;
             bool hov = (int)i == hoverBone && (!sel || target);
-            ImU32 col = target ? IM_COL32(255, 190, 60, 255) : sel ? kSelect : hov ? IM_COL32(255, 255, 255, 255) : pend ? IM_COL32(255, 150, 40, 255) : toU32(boneDrawColor(bd.color));
-            ImU32 fill = target ? IM_COL32(255, 190, 60, 110) : sel ? kSelectFill : hov ? IM_COL32(255, 255, 255, 80) : pend ? IM_COL32(255, 150, 40, 70) : toU32(boneDrawColor(bd.color), 0.35f);
+            // Hover is a vibrant, sharp orange, so the bone under the pointer stands out from any artwork behind it.
+            const ImU32 kHover = IM_COL32(255, 106, 0, 255), kHoverFill = IM_COL32(255, 106, 0, 110);
+            ImU32 col = target ? IM_COL32(255, 190, 60, 255) : sel ? kSelect : hov ? kHover : pend ? IM_COL32(255, 150, 40, 255) : toU32(boneDrawColor(bd.color));
+            ImU32 fill = target ? IM_COL32(255, 190, 60, 110) : sel ? kSelectFill : hov ? kHoverFill : pend ? IM_COL32(255, 150, 40, 70) : toU32(boneDrawColor(bd.color), 0.35f);
             if (auto wc = weightBoneColors.find((int)i); wc != weightBoneColors.end() && !target) {
                 // Bound bones show their weight colour; the ones selected in the Weights view are drawn solid.
                 ImU32 c = wc->second;
@@ -588,7 +590,7 @@ void Editor::drawOverlay(ImDrawList* dl) {
                     ImVec2 pts[4] = {p0, ImVec2(m.x + n.x * w, m.y + n.y * w), p1, ImVec2(m.x - n.x * w, m.y - n.y * w)};
                     // Pose tool: every bone shows its edges so it is clear what can be grabbed.
                     if (doc.tool == Tool::Pose && !sel && !hov) dl->AddPolyline(pts, 4, IM_COL32(255, 255, 255, 70), ImDrawFlags_Closed, 1.0f);
-                    if (hov) dl->AddPolyline(pts, 4, IM_COL32(255, 255, 255, 90), ImDrawFlags_Closed, 5.0f); // glow
+                    if (hov) dl->AddPolyline(pts, 4, IM_COL32(255, 106, 0, 120), ImDrawFlags_Closed, 5.0f); // glow
                     dl->AddConvexPolyFilled(pts, 4, fill);
                     dl->AddPolyline(pts, 4, col, ImDrawFlags_Closed, sel ? 2.0f : hov ? 2.4f : 1.2f);
                 }
