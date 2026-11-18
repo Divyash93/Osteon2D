@@ -42,6 +42,7 @@ void Editor::renderFrames(const ExportRender& r, std::vector<std::vector<uint8_t
     const float bw = std::max(1e-3f, x1 - x0), bh = std::max(1e-3f, y1 - y0);
     if (r.sizeMode == 1) scale = std::max(1, r.sizePx - r.pad * 2) / bw;        // fit a pixel width
     else if (r.sizeMode == 2) scale = std::max(1, r.sizePx - r.pad * 2) / bh;   // fit a pixel height
+    if (r.fitW > 0 && r.fitH > 0) scale = std::min(std::max(1, r.fitW - r.pad * 2) / bw, std::max(1, r.fitH - r.pad * 2) / bh); // fit a box
     w = std::max(1, (int)std::ceil(bw * scale) + r.pad * 2);
     h = std::max(1, (int)std::ceil(bh * scale) + r.pad * 2);
     const int k = std::max(1, std::min(4, r.supersample));

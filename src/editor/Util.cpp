@@ -4,6 +4,8 @@
 #include <shobjidl.h>
 #include <shellapi.h>
 #include <algorithm>
+#include <cstdint>
+#include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
@@ -202,6 +204,15 @@ void openInExplorer(const std::string& path) {
     std::wstring w = widen(path);
     std::replace(w.begin(), w.end(), L'/', L'\\');
     ShellExecuteW(nullptr, L"open", w.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+}
+
+std::string projectThumbPath(const std::string& projectPath, const std::string& dataDir) {
+    std::string p = normalizePath(projectPath);
+    uint64_t h = 1469598103934665603ull; // FNV-1a over the lower-cased path
+    for (unsigned char c : p) { h ^= (uint64_t)(c >= 'A' && c <= 'Z' ? c + 32 : c); h *= 1099511628211ull; }
+    char name[32];
+    snprintf(name, sizeof name, "%016llx.png", (unsigned long long)h);
+    return joinPath(joinPath(dataDir, "thumbs"), name);
 }
 
 } // namespace osteon

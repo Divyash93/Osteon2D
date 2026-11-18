@@ -132,6 +132,7 @@ void Editor::beforeNewFrame() {
 
 void Editor::shutdown() {
     splash.release();
+    releaseHomeThumbs();
     clearAutosave(); // a normal exit: nothing left to recover
     writeTextFile(joinPath(appDataDir(), "autosave_settings.txt"), std::to_string(autosaveEnabled ? 1 : 0) + " " + std::to_string(autosaveSeconds));
     layoutIni[(int)layoutMode] = ImGui::SaveIniSettingsToMemory();
@@ -268,6 +269,7 @@ void Editor::openPath(const std::string& path) {
         previewState = AnimationState(&doc.data);
         doc.autoKey = autoKeyDefault;
         fitRequested = true;
+        saveThumbnail(doc.projectPath.empty() ? path : doc.projectPath);
         setStatus("Opened " + path + (doc.warnings.empty() ? "" : " (" + std::to_string(doc.warnings.size()) + " warnings, see Problems)"));
         if (!doc.warnings.empty()) showProblems = true;
     } else {
@@ -297,6 +299,7 @@ bool Editor::cmdSave() {
         MessageBoxW(hwnd, widen(err).c_str(), L"Osteon", MB_ICONERROR);
         return false;
     }
+    saveThumbnail(doc.projectPath);
     setStatus("Saved " + doc.projectPath);
     return true;
 }
@@ -311,6 +314,7 @@ bool Editor::cmdSaveAs() {
         MessageBoxW(hwnd, widen(err).c_str(), L"Osteon", MB_ICONERROR);
         return false;
     }
+    saveThumbnail(p);
     setStatus("Saved " + p);
     return true;
 }

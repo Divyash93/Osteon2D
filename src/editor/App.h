@@ -233,7 +233,7 @@ struct Editor {
     void applyLayout(const SavedLayout& l);
     SplashScreen splash; // shown once at start-up (Settings > General can turn it off)
     // The Home window (Home.cpp): recent projects and links, shown after the splash.
-    struct HomeItem { std::string path, name, ext; bool exists = false; long long age = -1; };
+    struct HomeItem { std::string path, name, ext; bool exists = false; long long age = -1; void* thumb = nullptr; int thumbW = 0, thumbH = 0; };
     bool showHome = false, homeOnStart = true, homeDirty = true, homeGrid = true;
     double homeOpenedAt = -1;
     char homeFilter[96] = "";
@@ -241,6 +241,8 @@ struct Editor {
     void homeWindow();
     void refreshHome();
     void openHome();
+    void releaseHomeThumbs();
+    void saveThumbnail(const std::string& projectPath); // a preview of the setup pose for the Home window
     int dopeRowHeight = 23, treeIndent = 14; // Settings > User interface / Dopesheet
     int gizmoSize = 2;           // Settings > User interface > Transform control size: 1 (smallest) .. 4 (largest), 2 = default
     float gizmoScale() const { static const float k[4] = {0.7f, 1.0f, 1.35f, 1.7f}; return k[std::max(1, std::min(4, gizmoSize)) - 1]; }
@@ -325,6 +327,7 @@ struct Editor {
         int supersample = 1;         // 1, 2 or 4: render larger and average down (multisample AA)
         bool drawImages = true;
         bool tightCrop = true;
+        int fitW = 0, fitH = 0;      // both > 0: scale so the image fits inside this box (overrides sizeMode)
     };
     void renderFrames(const ExportRender& r, std::vector<std::vector<uint8_t>>& frames, int& w, int& h);
     std::vector<int> visibleTimelines();

@@ -55,7 +55,35 @@ std::string ago(long long seconds) {
 
 } // namespace
 
+void Editor::releaseHomeThumbs() {
+    for (auto& it : homeItems)
+        if (it.thumb) { ((ID3D11ShaderResourceView*)it.thumb)->Release(); it.thumb = nullptr; }
+}
+
+void Editor::saveThumbnail(const std::string& projectPath) {
+    // The setup pose, fitted into a small box with a transparent background. Nothing is written for a skeleton without images.
+    if (projectPath.empty() || doc.data.slots.empty()) return;
+    ExportRender r;
+    r.anim = -1;
+    r.fitW = 352; r.fitH = 256;  // twice the tile size, so it stays sharp on high-DPI screens
+    r.pad = 6;
+    r.supersample = 2;
+    r.warmup = 0;
+    std::vector<std::vector<uint8_t>> frames;
+    int w = 0, h = 0;
+    renderFrames(r, frames, w, h);
+    if (frames.empty() || w <= 0 || h <= 0) return;
+    const std::vector<uint8_t>& px = frames[0];
+    bool drawn = false;
+    for (size_t i = 3; i < px.size() && !drawn; i += 4) drawn = px[i] != 0;
+    if (!drawn) return;
+    std::string tp = projectThumbPath(projectPath, appDataDir());
+    makeDirs(parentDir(tp));
+    if (savePngFile(tp, w, h, px.data())) homeDirty = true;
+}
+
 void Editor::refreshHome() {
+    releaseHomeThumbs();
     homeItems.clear();
     auto nowSys = std::chrono::system_clock::now();
     for (auto& p : doc.recentFiles) {
@@ -71,6 +99,13 @@ void Editor::refreshHome() {
             if (!ec) {
                 auto sys = std::chrono::clock_cast<std::chrono::system_clock>(ft);
                 it.age = (long long)std::chrono::duration_cast<std::chrono::seconds>(nowSys - sys).count();
+            }
+            std::string tp = projectThumbPath(p, appDataDir());
+            int w = 0, h = 0;
+            std::vector<uint8_t> px;
+            if (fileExists(tp) && loadImageFile(tp, w, h, px) && w > 0 && h > 0) {
+                it.thumb = gfx.createTexture(w, h, px.data());
+                if (it.thumb) { it.thumbW = w; it.thumbH = h; }
             }
         }
         homeItems.push_back(std::move(it));
@@ -259,6 +294,16 @@ void Editor::homeWindow() {
     int removeIdx = -1;
     float contentBottom = origin.y;
 
+    // A project's preview image, as large as fits in the box with its proportions kept, centred.
+    auto drawThumb = [&](ImDrawList* d, const HomeItem& it, ImVec2 b0, ImVec2 b1, float pad) {
+        float bw = (b1.x - b0.x) - pad * 2, bh = (b1.y - b0.y) - pad * 2;
+        if (bw <= 1 || bh <= 1 || it.thumbW <= 0 || it.thumbH <= 0) return;
+        float k = std::min(bw / it.thumbW, bh / it.thumbH);
+        float w = it.thumbW * k, h = it.thumbH * k;
+        ImVec2 q0(std::floor((b0.x + b1.x - w) / 2), std::floor((b0.y + b1.y - h) / 2));
+        d->AddImage((ImTextureID)it.thumb, q0, ImVec2(q0.x + w, q0.y + h), ImVec2(0, 0), ImVec2(1, 1), IM_COL32(255, 255, 255, it.exists ? 255 : 90));
+    };
+
     auto drawBadge = [&](ImVec2 p, const std::string& ext) {
         std::string s = ext.empty() ? "" : ext.substr(1);
         std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return (char)std::toupper(c); });
@@ -297,7 +342,8 @@ void Editor::homeWindow() {
                 tileColors(it.name, c0, c1);
                 cdl->AddRectFilledMultiColor(p0, p1, c0, c0, c1, c1);   // corners are squared by the border below
                 cdl->AddRect(p0, p1, hv ? colTeal : colBorder, 10 * u, 0, hv ? 2.0f : 1.0f);
-                drawIcon(cdl, Icon::Skeleton, ImVec2((p0.x + p1.x) / 2, (p0.y + p1.y) / 2 - 6 * u), 46 * u, IM_COL32(255, 255, 255, it.exists ? 210 : 70));
+                if (it.thumb) drawThumb(cdl, it, p0, p1, 10 * u);
+                else drawIcon(cdl, Icon::Skeleton, ImVec2((p0.x + p1.x) / 2, (p0.y + p1.y) / 2 - 6 * u), 46 * u, IM_COL32(255, 255, 255, it.exists ? 210 : 70));
                 drawBadge(ImVec2(p0.x + 8 * u, p1.y - 25 * u), it.ext);
                 if (!it.exists) {
                     cdl->AddRectFilled(p0, p1, IM_COL32(0, 0, 0, 110));
@@ -344,7 +390,8 @@ void Editor::homeWindow() {
             tileColors(it.name, c0, c1);
             ImVec2 t0(p0.x + 8 * u, p0.y + 7 * u), t1(t0.x + 56 * u, t0.y + 40 * u);
             cdl->AddRectFilledMultiColor(t0, t1, c0, c0, c1, c1);
-            drawIcon(cdl, Icon::Skeleton, ImVec2((t0.x + t1.x) / 2, (t0.y + t1.y) / 2), 22 * u, IM_COL32(255, 255, 255, it.exists ? 220 : 80));
+            if (it.thumb) drawThumb(cdl, it, t0, t1, 2 * u);
+            else drawIcon(cdl, Icon::Skeleton, ImVec2((t0.x + t1.x) / 2, (t0.y + t1.y) / 2), 22 * u, IM_COL32(255, 255, 255, it.exists ? 220 : 80));
             ctext(14 * u, ImVec2(t1.x + 14 * u, p0.y + 9 * u), it.exists ? colText : colDim, it.name.c_str(), availW * 0.4f);
             ctext(11 * u, ImVec2(t1.x + 14 * u, p0.y + 30 * u), colDim, it.path.c_str(), availW - 250 * u);
             std::string right = it.exists ? (it.age >= 0 ? ago(it.age) : std::string()) : std::string(tr("File not found"));

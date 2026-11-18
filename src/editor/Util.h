@@ -25,6 +25,9 @@ std::string fileName(const std::string& p);
 std::string stripExtension(const std::string& p);
 std::string extension(const std::string& p);       // lowercase, with dot
 std::string appDataDir();                          // %APPDATA%/Osteon
+/** The preview image of a project for the Home window: <dataDir>/thumbs/<hash of the path>.png. The path is normalised and
+    compared case-insensitively (Windows paths), so the same project always maps to the same file. */
+std::string projectThumbPath(const std::string& projectPath, const std::string& dataDir);
 
 // Native dialogs; return empty string on cancel. Filter like L"Osteon project\0*.osteon\0All\0*.*\0".
 std::string openFileDialog(HWND owner, const wchar_t* filter, const wchar_t* title);
