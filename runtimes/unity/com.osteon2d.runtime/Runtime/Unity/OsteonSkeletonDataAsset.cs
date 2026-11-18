@@ -22,10 +22,27 @@ namespace Osteon2D
         public float defaultMix = 0.2f;
         [Tooltip("Optional: one material per page and blend mode, in the order page0 Normal, Additive, Multiply, Screen, page1 ... Leave empty to create them at run time.")]
         public Material[] materials;
+        [Tooltip("Shader for materials made at run time. Filled in automatically. Referencing it here makes Unity include it in game builds (Shader.Find alone does not).")]
+        public Shader shader;
+        [Tooltip("Shader for tint black (two colour) slots. Filled in automatically, and referenced here so builds include it.")]
+        public Shader tintBlackShader;
 
         SkeletonData data;
         Atlas atlas;
+        bool warnedShader;
         readonly Dictionary<int, Material> runtimeMaterials = new Dictionary<int, Material>();
+
+        public const string DefaultShaderName = "Osteon2D/Default";
+        public const string TintBlackShaderName = "Osteon2D/Tint Black";
+
+#if UNITY_EDITOR
+        void OnValidate()
+        {
+            // Older assets, and assets made with Create > Osteon2D > Skeleton Data, get their shader references here.
+            if (shader == null) shader = Shader.Find(DefaultShaderName);
+            if (tintBlackShader == null) tintBlackShader = Shader.Find(TintBlackShaderName);
+        }
+#endif
 
         public SkeletonData GetSkeletonData(bool forceReload = false)
         {
@@ -56,9 +73,20 @@ namespace Osteon2D
             int key = slot * 2 + (tintBlack ? 1 : 0);
             Material m;
             if (runtimeMaterials.TryGetValue(key, out m) && m != null) return m;
-            Shader shader = Shader.Find(tintBlack ? "Osteon2D/Tint Black" : "Osteon2D/Default");
-            if (shader == null) shader = Shader.Find("Sprites/Default");
-            m = new Material(shader) { name = name + "_page" + page + "_" + blend };
+            // The referenced shader first: in a game build, Shader.Find only finds shaders that something references.
+            Shader s = tintBlack ? tintBlackShader : shader;
+            if (s == null) s = Shader.Find(tintBlack ? TintBlackShaderName : DefaultShaderName);
+            if (s == null)
+            {
+                s = Shader.Find("Sprites/Default");
+                if (!warnedShader)
+                {
+                    warnedShader = true;
+                    Debug.LogWarning("[Osteon2D] " + name + ": shader '" + (tintBlack ? TintBlackShaderName : DefaultShaderName) +
+                                     "' not found, drawing with Sprites/Default (blend modes and tint black will be wrong). Select the Skeleton Data asset in the editor so it stores its shader references.");
+                }
+            }
+            m = new Material(s) { name = name + "_page" + page + "_" + blend };
             if (pageTextures != null && page < pageTextures.Length) m.mainTexture = pageTextures[page];
             ApplyBlend(m, blend);
             m.hideFlags = HideFlags.DontSave;

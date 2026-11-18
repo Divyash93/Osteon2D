@@ -12,6 +12,8 @@ namespace UnityEngine
     public class ScriptableObject : Object { public static T CreateInstance<T>() where T : ScriptableObject, new() { return new T(); } }
     public class TextAsset : Object { public string text; public TextAsset(string t) { text = t; } }
     public class Texture : Object { }
+    public enum TextureWrapMode { Repeat, Clamp, Mirror, MirrorOnce }
+    public enum FilterMode { Point, Bilinear, Trilinear }
     public class Texture2D : Texture { }
     public class Shader : Object { public static Shader Find(string n) { return null; } }
     public class Material : Object { public Texture mainTexture; public Material(Shader s) { } public void SetFloat(string n, float v) { } }
@@ -53,6 +55,12 @@ namespace UnityEditor
         public static void CreateAsset(UnityEngine.Object o, string p) { } public static string GenerateUniqueAssetPath(string p) { return p; }
         public static void AddObjectToAsset(UnityEngine.Object o, UnityEngine.Object a) { } public static void SaveAssets() { }
     }
+    public class AssetImporter : UnityEngine.Object { public static AssetImporter GetAtPath(string p) { return null; } public void SaveAndReimport() { } }
+    public enum TextureImporterType { Default, NormalMap, GUI, Sprite }
+    public enum TextureImporterNPOTScale { None, ToNearest, ToLarger, ToSmaller }
+    public enum TextureImporterCompression { Uncompressed, Compressed, CompressedHQ, CompressedLQ }
+    public enum TextureImporterAlphaSource { None, FromInput, FromGrayScale }
+    public class TextureImporter : AssetImporter { public TextureImporterType textureType; public bool alphaIsTransparency, mipmapEnabled, sRGBTexture; public UnityEngine.TextureWrapMode wrapMode; public UnityEngine.FilterMode filterMode; public TextureImporterNPOTScale npotScale; public TextureImporterCompression textureCompression; public TextureImporterAlphaSource alphaSource; }
     public static class Selection { public static UnityEngine.Object activeObject; public static UnityEngine.GameObject activeGameObject; }
     public static class EditorUtility { public static bool DisplayDialog(string a, string b, string c) { return true; } public static void SetDirty(UnityEngine.Object o) { } }
     public static class Undo { public static void RegisterCreatedObjectUndo(UnityEngine.Object o, string n) { } }

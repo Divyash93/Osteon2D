@@ -7,4 +7,4 @@ if not exist "%CSC%" set CSC=%ProgramFiles%\Microsoft Visual Studio\2022\Profess
 set ROOT=%~dp0..\..
 set PKG=%ROOT%\runtimes\unity\com.osteon2d.runtime
 if not exist "%ROOT%\build\rt" mkdir "%ROOT%\build\rt"
-"%CSC%" -nologo -target:library -out:"%ROOT%\build\rt\UnityCheck.dll" "%~dp0UnityStubs.cs" "%PKG%\Runtime\Core\*.cs" "%PKG%\Runtime\Unity\*.cs" "%PKG%\Editor\*.cs" && echo Unity package type-checks.
+"%CSC%" -nologo -target:library -define:UNITY_EDITOR -out:"%ROOT%\build\rt\UnityCheck.dll" "%~dp0UnityStubs.cs" "%PKG%\Runtime\Core\*.cs" "%PKG%\Runtime\Unity\*.cs" "%PKG%\Editor\*.cs" && echo Unity package type-checks.

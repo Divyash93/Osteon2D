@@ -128,6 +128,7 @@ Godot does not pack unknown file types by default. Under **Project > Export > Re
    The package imports `.osteon` and `.atlas` files as text assets automatically.
 2. In the Project window, right-click the skeleton file (`hero.json` or `hero.osteon`) and choose **Create > Osteon2D > Skeleton Data From Selection**.
    - This creates `hero_SkeletonData.asset`, linked to the atlas next to it (`hero.atlas`, or the only `.atlas` in that folder) and its page images, with one material per page and blend mode.
+   - It also sets the atlas page images to the import settings an atlas needs: no mipmaps, no compression, Clamp wrapping and *Alpha Is Transparency*. Without these, edges between packed images bleed and outlines get dark fringes. The Console says when it changed them.
 3. Choose **GameObject > Osteon2D > Skeleton Animation**, or add the **Osteon2D/Skeleton Animation** component to any GameObject.
 4. Drag the data asset into **Skeleton Data Asset**, and type an animation name into **Animation Name**.
 5. The character previews in the Scene view (**Preview In Edit Mode**) and plays when you press Play.
@@ -231,6 +232,8 @@ Add the **Osteon2D/Bone Follower** component to a GameObject, set **Skeleton Ani
 | The character is huge or tiny (Unity) | Change `scale` on the Skeleton Data asset (0.01 = 100 px per unit). |
 | Works in the Godot editor but not in the exported game | Add `*.osteon, *.json, *.atlas` to the export resource filters. |
 | "No .atlas file was found" (Unity) | Put the `.atlas` next to the skeleton file, ideally with the same name. |
+| Blurry edges, lines between images or dark outlines (Unity) | The atlas PNGs have the wrong import settings. Run **Skeleton Data From Selection** again, which fixes them, or set them by hand: Texture Type *Default*, *Alpha Is Transparency* on, *Generate Mip Maps* off, Wrap Mode *Clamp*, Compression *None*. |
+| Works in the editor, wrong colours or blending in a built game (Unity) | Select the Skeleton Data asset once in the editor and save the project. It then stores its shader references, so Unity includes the Osteon2D shaders in the build. |
 | A Unity error you cannot explain | Please open an issue: the Unity layer has not been tested in the real editor yet. |
 
 Questions and bug reports: <https://github.com/Divyash93/Osteon2D/issues>

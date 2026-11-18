@@ -151,6 +151,22 @@ void Editor::viewport() {
         ImGui::SetCursorScreenPos(ImVec2(vpOrigin.x + 14, vpOrigin.y + 42));
         ImGui::TextColored(gLightUi ? ImVec4(0.25f, 0.25f, 0.25f, 1) : theme::vec(theme::hex(theme::kTextSecondary)), "%s   frame %d", doc.currentAnimation()->name.c_str(), (int)std::round(doc.time * doc.data.fps));
     }
+    // Compensation silently changes what a bone edit does (children or images stay behind), so while it is on
+    // the viewport says so; a click turns it off.
+    if (doc.mode == Mode::Setup && (doc.boneCompensation || doc.imageCompensation)) {
+        std::string note = doc.boneCompensation && doc.imageCompensation ? "Bone + image compensation ON: child bones and this bone's images stay in place"
+                         : doc.boneCompensation ? "Bone compensation ON: child bones stay in place"
+                                                : "Image compensation ON: this bone's images stay in place";
+        note += "  (click to turn off)";
+        ImGui::SetCursorScreenPos(ImVec2(vpOrigin.x + 14, vpOrigin.y + 42));
+        ImGui::PushStyleColor(ImGuiCol_Button, gLightUi ? ImVec4(1.0f, 0.86f, 0.62f, 1) : ImVec4(0.42f, 0.24f, 0.04f, 0.92f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, gLightUi ? ImVec4(1.0f, 0.80f, 0.50f, 1) : ImVec4(0.55f, 0.31f, 0.05f, 1));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, gLightUi ? ImVec4(0.95f, 0.72f, 0.40f, 1) : ImVec4(0.62f, 0.35f, 0.06f, 1));
+        ImGui::PushStyleColor(ImGuiCol_Text, gLightUi ? ImVec4(0.45f, 0.22f, 0.0f, 1) : ImVec4(1.0f, 0.78f, 0.40f, 1));
+        if (ImGui::Button(note.c_str())) doc.boneCompensation = doc.imageCompensation = false;
+        ImGui::PopStyleColor(4);
+        if (ImGui::IsItemHovered()) ImGui::SetTooltip("Compensation is set with the Bone / Img buttons in the toolbar");
+    }
     if (bindMode) {
         const char* msg = "Bind: click each bone to bind to the mesh (Space/Esc finishes)";
         ImGui::SetCursorScreenPos(ImVec2(vpOrigin.x + vpSize.x / 2 - ImGui::CalcTextSize(msg).x / 2, vpOrigin.y + 10));
