@@ -33,6 +33,20 @@ It is one small native executable (C++20, Win32, Direct3D 11, Dear ImGui). There
 
 > **Inspired by Spine, not a copy of it.** Osteon2D is inspired by [Spine](https://esotericsoftware.com) from Esoteric Software, a tool we admire. It does **not** intend to replicate the whole of Spine, and it is not trying to. It is its own project with its own code and its own direction. Where it makes sense, it reads and writes the publicly documented Spine JSON format so that work can move between tools. See [Legal](#legal).
 
+## How Osteon2D was made
+
+Osteon2D was created by **Divyash Vishwakarma**. I couldn't afford the professional 2D skeletal animation tools, so I decided to build one.
+
+I designed it, decided what it should do and how it should work, directed the development, and tested every feature in the running app. A large part of the code was written with **AI coding help** (Claude, by Anthropic), working from my design and feedback. Being open about that matters to me, so you know exactly what you are using.
+
+What keeps the quality up:
+
+- **Automated tests:** the animation engine and the editor's document model are covered by more than 200 tests that run on every build.
+- **Runtimes checked against the editor:** the Godot and Unity runtimes are compared pose by pose with the editor's own engine (thousands of checks, no mismatches).
+- **Honest status:** [`PROGRESS.md`](PROGRESS.md) lists what is done, what is verified and what is still missing, including what has *not* been tested yet (such as the Unity runtime inside a real Unity editor).
+
+Bug reports and suggestions are very welcome. Every one helps make Osteon2D better.
+
 ## Showcase
 
 Everything below was rigged and animated in Osteon2D: one character (CyberCoat, 66 bones, 42 slots, 37 animations) with a cape that follows through, a hoverboard, an axe with a glowing trail and impact effects. The GIFs are rendered from the project.
