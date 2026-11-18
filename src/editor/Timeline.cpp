@@ -1083,6 +1083,7 @@ void Editor::dopesheetView() {
         pasteKeys(*this, fps);
         selKeys.clear();
     }
+    if (ImGui::IsWindowFocused()) dopesheetFocused = true; // so the global Ctrl+A (select all bones and slots) stays out of the way
     if (ImGui::IsWindowFocused() && io.KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_A)) {
         std::set<int> rowSet;
         for (auto& k : selKeys) rowSet.insert(k.timeline);

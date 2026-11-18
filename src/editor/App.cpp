@@ -560,6 +560,7 @@ void Editor::frame(float dt) {
         focusDefaults = 2;
     }
     shortcuts();
+    dopesheetFocused = false; // the dopesheet sets it again below while it has focus (read by shortcuts() next frame)
 
     viewport();
     if (showTree) treeView();
@@ -850,7 +851,8 @@ void Editor::shortcuts() {
             }
         }
     }
-    if (ctrl && pressed(ImGuiKey_A)) { doc.selectAll(); return; } // select all bones and slots
+    // Select all bones and slots, except while the dopesheet has focus: there Ctrl+A selects keys only (Timeline.cpp).
+    if (ctrl && pressed(ImGuiKey_A)) { if (!dopesheetFocused) doc.selectAll(); return; }
     if (doc.mode == Mode::Setup && ctrl) { // copy / paste of objects and of their transform; draw order to the front / back
         if (!shift && pressed(ImGuiKey_C)) { setStatus(doc.copySelection() ? "Copied" : "Nothing to copy"); return; }
         if (!shift && pressed(ImGuiKey_V)) { int n = doc.pasteObjects(false); if (n) setStatus("Pasted " + std::to_string(n) + " object(s)"); return; }

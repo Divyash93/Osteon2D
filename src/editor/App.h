@@ -284,6 +284,7 @@ struct Editor {
     void dockLayout(unsigned dockId);
     void menuBar();
     void shortcuts();
+    bool dopesheetFocused = false; // the dopesheet had keyboard focus last frame: Ctrl+A there selects keys, not bones and slots
     void viewport();
     void viewportToolbar();
     void viewportToolbarImpl();
