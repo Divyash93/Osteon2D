@@ -8,11 +8,12 @@ namespace osteon {
 
 static ImU32 keyColor(TimelineType t) {
     switch (t) {
-    // The transform gizmo's colours: rotate is red, X red and Y green, and the combined channel the gizmo's yellow centre.
-    case TimelineType::Rotate: return IM_COL32(225, 60, 60, 255);
-    case TimelineType::Translate: case TimelineType::Scale: case TimelineType::Shear: return IM_COL32(240, 200, 60, 255);
-    case TimelineType::TranslateX: case TimelineType::ScaleX: case TimelineType::ShearX: return IM_COL32(225, 60, 60, 255);
-    case TimelineType::TranslateY: case TimelineType::ScaleY: case TimelineType::ShearY: return IM_COL32(70, 200, 80, 255);
+    // The same colours as the row icons (Icons.cpp), so a key's line matches the icon beside it: rotate green, translate
+    // blue, scale red, shear yellow. The X / Y split channels use their family's colour.
+    case TimelineType::Rotate: return IM_COL32(100, 210, 110, 255);
+    case TimelineType::Translate: case TimelineType::TranslateX: case TimelineType::TranslateY: return IM_COL32(90, 170, 240, 255);
+    case TimelineType::Scale: case TimelineType::ScaleX: case TimelineType::ScaleY: return IM_COL32(230, 90, 90, 255);
+    case TimelineType::Shear: case TimelineType::ShearX: case TimelineType::ShearY: return IM_COL32(240, 200, 70, 255);
     case TimelineType::Attachment: return IM_COL32(240, 170, 60, 255);
     case TimelineType::RGBA: case TimelineType::RGB: case TimelineType::Alpha: case TimelineType::RGBA2: case TimelineType::RGB2: return IM_COL32(230, 120, 230, 255);
     case TimelineType::Deform: return IM_COL32(170, 120, 255, 255);
